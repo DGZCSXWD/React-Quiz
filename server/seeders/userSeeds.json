@@ -1,0 +1,42 @@
+[
+  {
+    "username": "John Smith",
+    "email": "jsmith@techfriends.dev",
+    "password": "password1234"
+  },
+  {
+    "username": "Emily Johnson",
+    "email": "ejohnson@techfriends.dev",
+    "password": "password5678"
+  },
+  {
+    "username": "Robert Williams",
+    "email": "rwilliams@techfriends.dev",
+    "password": "password9012"
+  },
+  {
+    "username": "Sarah Brown",
+    "email": "sbrown@techfriends.dev",
+    "password": "password3456"
+  },
+  {
+    "username": "James Davis",
+    "email": "jdavis@techfriends.dev",
+    "password": "password7890"
+  },
+  {
+    "username": "Patricia Miller",
+    "email": "pmiller@techfriends.dev",
+    "password": "password2345"
+  },
+  {
+    "username": "David Wilson",
+    "email": "dwilson@techfriends.dev",
+    "password": "password6789"
+  },
+  {
+    "username": "Linda Moore",
+    "email": "lmoore@techfriends.dev",
+    "password": "password0123"
+  }
+]

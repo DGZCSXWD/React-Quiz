@@ -1,0 +1,37 @@
+[
+  [
+    {
+      "workoutText": "1 km of swimming, 30 mins of cycling, 10 sets of squats",
+      "workoutAuthor": "John Smith"
+    },
+    {
+      "workoutText": "3 km of jogging, 15 mins of yoga, 8 sets of lunges",
+      "workoutAuthor": "Emily Johnson"
+    },
+    {
+      "workoutText": "2 km of running, 20 mins of aerobic dancing, 12 sets of push-ups",
+      "workoutAuthor": "Robert Williams"
+    },
+    {
+      "workoutText": "2.5 km of brisk walking, 30 mins of pilates, 10 sets of deadlifts",
+      "workoutAuthor": "Sarah Brown"
+    },
+    {
+      "workoutText": "5 km of cycling, 15 mins of stretching, 7 sets of bench press",
+      "workoutAuthor": "James Davis"
+    },
+    {
+      "workoutText": "4 km of running, 20 mins of yoga, 15 sets of squats",
+      "workoutAuthor": "Patricia Miller"
+    },
+    {
+      "workoutText": "2 km of swimming, 25 mins of aerobic exercises, 10 sets of lunges",
+      "workoutAuthor": "David Wilson"
+    },
+    {
+      "workoutAuthor": "Linda Moore",
+      "workoutText": "3 km of jogging, 20 mins of HIIT, 8 sets of pull-ups"
+    }
+  ]
+  
+]
