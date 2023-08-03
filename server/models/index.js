@@ -1,4 +1,4 @@
-const User = require("./userModel");
-const Question = require("./questionModel");
+const User = require("./User");
+const Workout = require("./Workout");
 
-module.exports = { User, Question };
+module.exports = { User, Workout };
