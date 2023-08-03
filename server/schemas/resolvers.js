@@ -1,70 +1,148 @@
-const { AuthenticationError } = require("apollo-server-express");
-const { User, Question } = require("../models");
-const { signToken } = require("../utils/auth");
+const { AuthenticationError } = require('apollo-server-express');
+const { User, Workout } = require('../models');
+const { signToken } = require('../utils/auth');
 
 const resolvers = {
   Query: {
-    me: async (parent, args, context) => {
-      if (context.user) {
-        return User.findOne({ _id: context.user._id });
-      }
-      throw new AuthenticationError("You need to be logged in!");
-    },
     users: async () => {
-      return User.find({});
+      return User.find().populate('workouts');
     },
     user: async (parent, { username }) => {
-      return User.findOne({ username });
+      return User.findOne({ username }).populate('workouts');
     },
-    questions: async () => {
-      return Question.find({});
+    workouts: async (parent, { username }) => {
+      const params = username ? { username } : {};
+      return Workout.find(params).sort({ createdAt: -1 });
     },
-    question: async (parent, { _id }) => {
-      return Question.findOne({ _id });
+    workout: async (parent, { workoutId }) => {
+      return Workout.findOne({ _id: workoutId });
+    },
+    me: async (parent, args, context) => {
+      if (context.user) {
+        return User.findOne({ _id: context.user._id }).populate('workouts');
+      }
+      throw new AuthenticationError('You need to be logged in!');
     },
   },
 
   Mutation: {
-    addUser: async (parent, { username, password }) => {
-      const user = await User.create({ username, password });
+    addUser: async (parent, { username, email, password }) => {
+      const user = await User.create({ username, email, password });
       const token = signToken(user);
       return { token, user };
     },
-    login: async (parent, { username, password }) => {
-      const user = await User.findOne({ username });
+    login: async (parent, { email, password }) => {
+      const user = await User.findOne({ email });
 
       if (!user) {
-        throw new AuthenticationError("No user found with this username!");
+        throw new AuthenticationError('No user found with this email address');
       }
 
       const correctPw = await user.isCorrectPassword(password);
 
       if (!correctPw) {
-        throw new AuthenticationError("Incorrect credentials!");
+        throw new AuthenticationError('Incorrect credentials');
       }
 
       const token = signToken(user);
+
       return { token, user };
     },
-    addQuestion: async (
-      parent,
-      { question, options, correctOption, points },
-      context
-    ) => {
+    addWorkout: async (parent, { workoutText }, context) => {
       if (context.user) {
-        const newQuestion = await Question.create({
-          question,
-          options,
-          correctOption,
-          points,
+        const workout = await Workout.create({
+          workoutText,
+          workoutAuthor: context.user.username,
         });
 
-        return newQuestion;
+        await User.findOneAndUpdate(
+          { _id: context.user._id },
+          { $addToSet: { workouts: workout._id } }
+        );
+
+        return workout;
       }
-      throw new AuthenticationError(
-        "You need to be logged in to add a question!"
-      );
+      throw new AuthenticationError('You need to be logged in!');
     },
+    addComment: async (parent, { workoutId, commentText }, context) => {
+      if (context.user) {
+        return Workout.findOneAndUpdate(
+          { _id: workoutId },
+          {
+            $addToSet: {
+              comments: { commentText, commentAuthor: context.user.username },
+            },
+          },
+          {
+            new: true,
+            runValidators: true,
+          }
+        );
+      }
+      throw new AuthenticationError('You need to be logged in!');
+    },
+    removeWorkout: async (parent, { workoutId }, context) => {
+      if (context.user) {
+        const workout = await Workout.findOneAndDelete({
+          _id: workoutId,
+          workoutAuthor: context.user.username,
+        });
+
+        await User.findOneAndUpdate(
+          { _id: context.user._id },
+          { $pull: { workouts: workout._id } }
+        );
+
+        return workout;
+      }
+      throw new AuthenticationError('You need to be logged in!');
+    },
+    removeComment: async (parent, { workoutId, commentId }, context) => {
+      if (context.user) {
+        return Workout.findOneAndUpdate(
+          { _id: workoutId },
+          {
+            $pull: {
+              comments: {
+                _id: commentId,
+                commentAuthor: context.user.username,
+              },
+            },
+          },
+          { new: true }
+        );
+      }
+      throw new AuthenticationError('You need to be logged in!');
+    },
+
+    upvoteWorkout: async (parent, { workoutId }) => {
+      const workout = await Workout.findById(workoutId);
+      workout.upvotes += 1;
+      await workout.save();
+      return workout;
+    },
+
+    downvoteWorkout: async (parent, { workoutId }) => {
+      const workout = await Workout.findById(workoutId);
+      workout.downvotes += 1;
+      await workout.save();
+      return workout;
+    },
+
+    // addReaction: async (parent, { workoutId, reactionType }) => {
+    //   const workout = await Workout.findById(workoutId);
+    
+    //   // Check if the reactionType is valid
+    //   if (!workout.reactions[reactionType]) {
+    //     throw new Error('Invalid reaction type');
+    //   }
+    
+    //   workout.reactions[reactionType] += 1;
+    //   await workout.save();
+      
+    //   return workout;
+    // },    
+
   },
 };
 
